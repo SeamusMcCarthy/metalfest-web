@@ -24,6 +24,22 @@ module.exports = [
   { method: "GET", path: "/gallery", config: Gallery.index },
   { method: "POST", path: "/uploadfile", config: Gallery.uploadFile },
   { method: "GET", path: "/deleteimage/{id}", config: Gallery.deleteImage },
+  {
+    method: "GET",
+    path: "/edit-festival/{id}",
+    config: Festivals.showFestival,
+  },
+  {
+    method: "POST",
+    path: "/edit-festival/{id}",
+    config: Festivals.editFestival,
+  },
+  {
+    method: "GET",
+    path: "/delete-festival/{id}",
+    config: Festivals.deleteFestival,
+  },
+  { method: "GET", path: "/attended/{id}", config: Festivals.attendedFestival },
 
   // Make public folder available to all routes
   {
