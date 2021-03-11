@@ -1,0 +1,30 @@
+<div class="uk-flex uk-flex-center uk-flex-middle uk-grid-small" uk-grid>
+    {{> title-card title="MetalFest - Your home for Heavy Metal festival listings" subtitle="Please sign up or log in"}}
+    {{> welcome-menu }}
+</div>
+
+<div class="uk-container uk-container-xlarge uk-margin">
+    <div class="uk-position-relative uk-visible-toggle uk-light" tabindex="-1" uk-slideshow>
+        <ul class="uk-slideshow-items">
+            <li>
+                <img src="/images/band1.jpg" alt="" uk-cover>
+            </li>
+            <li>
+                <img src="/images/band2.jpg" alt="" uk-cover>
+            </li>
+            <li>
+                <img src="/images/band3.jpg" alt="" uk-cover>
+            </li>
+        </ul>
+        <div class="titleMessage">
+            <div class="heading">
+                <p class="main">MetalFest</p>
+                <p class="sub typed"></p>
+            </div>
+        </div>
+        <a class="uk-position-center-left uk-position-small uk-hidden-hover" href="#" uk-slidenav-previous uk-slideshow-item="previous"></a>
+        <a class="uk-position-center-right uk-position-small uk-hidden-hover" href="#" uk-slidenav-next uk-slideshow-item="next"></a>
+    </div>
+</div>
+</body>
+</html>

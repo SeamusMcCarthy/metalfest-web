@@ -1,0 +1,52 @@
+<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+<!--    <img src="{{festival.image.imageURL}}" alt="">-->
+    <table class="uk-table uk-table-divider">
+        <caption>
+            Festival Details:
+        </caption>
+        <thead>
+            <th>Name</th>
+            <th>Description</th>
+            <th>City</th>
+            <th>Country</th>
+            <th></th>
+        </thead>
+        <tbody class="uk-text-left">
+            <tr>
+                <td>{{festival.name}}</td>
+                <td>{{festival.description}}</td>
+                <td id="location-city"> {{festival.city}}</td>
+                <td id="location-country">{{festival.country}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <table id="weather-table" class="uk-table uk-table-divider">
+        <caption> Weather Report :</caption>
+        <thead>
+        <tr>
+            <th>Feels Like</th>
+            <th>Clouds</th>
+            <th>Wind Speed</th>
+            <th>Wind Direction</th>
+            <th>Visibility</th>
+            <th>Humidity</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>{{report.feelsLike}}</td>
+            <td>{{report.clouds}}</td>
+            <td>{{report.windSpeed}}</td>
+            <td>{{report.windDirection}}</td>
+            <td>{{report.visibility}}</td>
+            <td>{{report.humidity}}</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<p uk-margin>
+    <a class="uk-button uk-button-primary" href="/edit-festival/{{festival._id}}">Edit Festival</a>
+    <a class="uk-button uk-button-primary" href="/attended/{{festival._id}}">Mark Attended</a>
+    <a class="uk-button uk-button-danger" href="/delete-fest/{{festival._id}}">Delete Festival</a>
+</p>

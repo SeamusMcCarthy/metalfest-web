@@ -1,0 +1,27 @@
+{
+  "name": "metalfest-web",
+  "version": "1.0.0",
+  "description": "An online resource for metal festivals",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Seamus McCarthy",
+  "license": "ISC",
+  "dependencies": {
+    "@hapi/boom": "^9.1.1",
+    "@hapi/cookie": "^11.0.2",
+    "@hapi/hapi": "^20.1.0",
+    "@hapi/inert": "^6.0.3",
+    "@hapi/joi": "^17.1.1",
+    "@hapi/vision": "^6.0.1",
+    "axios": "^0.21.1",
+    "cloudinary": "^1.25.0",
+    "dotenv": "^8.2.0",
+    "handlebars": "^4.7.7",
+    "mongoose": "^5.11.17"
+  },
+  "devDependencies": {
+    "prettier": "^2.2.1"
+  }
+}

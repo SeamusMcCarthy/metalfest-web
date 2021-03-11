@@ -1,0 +1,16 @@
+<div class="uk-flex uk-flex-center uk-flex-middle uk-grid-small" uk-grid>
+    {{> title-card title="Metal Fest Inc." subtitle=title}}
+    {{> main-menu }}
+</div>
+
+<div class="uk-container uk-margin">
+    <div class="uk-child-width-expand uk-flex-center uk-flex-middle uk-text-center" uk-grid>
+        <div class="uk-width-expand@m">
+            {{> fest-dtls}}
+        </div>
+        <div class="uk-width-auto@m">
+<!--            <img width="300" src="/images/fest-main.jfif">-->
+            <img width="400" src="{{festival.image.imageURL}}" alt="">
+        </div>
+    </div>
+</div>
