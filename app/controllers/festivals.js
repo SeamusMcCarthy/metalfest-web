@@ -67,6 +67,7 @@ const Festivals = {
           approvalStatus: "pending",
           image: newImage._id,
           addedBy: user._id,
+          attendees: [],
         });
         await newFestival.save();
         return h.redirect("/report");
@@ -79,6 +80,70 @@ const Festivals = {
       output: "data",
       maxBytes: 209715200,
       parse: true,
+    },
+  },
+  showFestival: {
+    handler: async function (request, h) {
+      const id = request.params.id;
+      const categories = await Category.find().lean();
+      const festival = await Festival.findById(id)
+        .populate("image")
+        .populate("addedBy")
+        .lean();
+
+      return h.view("edit", {
+        title: "Festival Details",
+        festival: festival,
+        categories: categories,
+      });
+    },
+  },
+  editFestival: {
+    handler: async function (request, h) {
+      try {
+        const file = request.payload.imagefile;
+        // if (Object.keys(file).length > 0) {
+        const image = await ImageStore.uploadImage(request.payload.imagefile);
+        const newImage = new Image({
+          imageURL: image.url,
+        });
+        await newImage.save();
+        const festEdit = request.payload;
+        const id = request.params.id;
+        const fest = await Festival.findById(id);
+        fest.name = festEdit.name;
+        fest.city = festEdit.city;
+        fest.country = festEdit.country;
+        fest.description = festEdit.description;
+        fest.category = festEdit.category;
+        fest.startDate = festEdit.startDate;
+        fest.endDate = festEdit.endDate;
+        fest.image = newImage._id;
+        fest.latitude = festEdit.latitude;
+        fest.longitude = festEdit.longitude;
+        await fest.save();
+        return h.redirect("/home");
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
+    },
+    payload: {
+      multipart: true,
+      output: "data",
+      maxBytes: 209715200,
+      parse: true,
+    },
+  },
+  deleteFestival: {
+    auth: false,
+    handler: function (request, h) {
+      return h.view("signup", { title: "Sign up for Metal Fest!!!" });
+    },
+  },
+  attendedFestival: {
+    auth: false,
+    handler: function (request, h) {
+      return h.view("signup", { title: "Sign up for Metal Fest!!!" });
     },
   },
   getDetails: {
