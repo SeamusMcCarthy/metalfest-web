@@ -135,9 +135,12 @@ const Festivals = {
     },
   },
   deleteFestival: {
-    auth: false,
-    handler: function (request, h) {
-      return h.view("signup", { title: "Sign up for Metal Fest!!!" });
+    handler: async function (request, h) {
+      const festID = request.params.id;
+      console.log("Festival ID : " + festID);
+      await Festival.deleteOne({ _id: festID });
+      return h.redirect("/home");
+      // return h.view("signup", { title: "Sign up for Metal Fest!!!" });
     },
   },
   attendedFestival: {
