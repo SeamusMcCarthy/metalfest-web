@@ -1,0 +1,66 @@
+<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+    <p>This is {{festival._id}}</p>
+    <form action="/edit-festival/{{festival._id}}" method="POST" enctype="multipart/form-data" >
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="text" name="name" value="{{festival.name}}" required/>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="text" name="city" value="{{festival.city}}"required/>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="text" name="country" value="{{festival.country}}" required/>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="number" name="latitude" value="{{festival.latitude}}" />
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="number" name="longitude" value="{{festival.longitude}}" />
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="text" name="description" value="{{festival.description}}" required/>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="date" name="startDate" value="{{festival.startDate}}" required/>
+            </div>
+        </div>
+        <div class="uk-margin">
+            <div class="uk-inline uk-width-1-1">
+                <input class="uk-input uk-form-large" type="date" name="endDate" value="{{festival.endDate}}" required/>
+            </div>
+        </div>
+
+        <div class="uk-margin">
+            <div>
+                <span>Please select a festival genre</span>
+            </div>
+            <div uk-form-custom="target: > * > span:first-child">
+                <select name="category" id="category" required>
+                    {{#each categories}}
+                        <option value="{{categoryName}}">{{categoryName}}</option>
+                    {{/each}}
+                </select>
+                <button class="uk-button uk-button-default" type="button" tabindex="-1">
+                    <span></span>
+                    <span uk-icon="icon: chevron-down"></span>
+                </button>
+            </div>
+        </div>
+        {{> upload }}
+        <div class="uk-margin">
+            <button class="uk-button uk-button-primary uk-button-large uk-width-1-1">Edit Festival Listing</button>
+        </div>
+    </form>
+</div>
