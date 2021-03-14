@@ -90,11 +90,17 @@ const Festivals = {
         .populate("image")
         .populate("addedBy")
         .lean();
+      const calendarSDate = new Date(festival.startDate)
+        .toISOString()
+        .split("T");
+      const calendarEDate = new Date(festival.endDate).toISOString().split("T");
 
       return h.view("edit", {
         title: "Festival Details",
         festival: festival,
         categories: categories,
+        calendarSDate: calendarSDate[0],
+        calendarEDate: calendarEDate[0],
       });
     },
   },
@@ -144,9 +150,31 @@ const Festivals = {
     },
   },
   attendedFestival: {
-    auth: false,
-    handler: function (request, h) {
-      return h.view("signup", { title: "Sign up for Metal Fest!!!" });
+    handler: async function (request, h) {
+      try {
+        const id = request.auth.credentials.id;
+        const user = await User.findById(id);
+        const festID = request.params.id;
+        const fest = await Festival.findById(festID);
+        console.log("Fest name " + fest.name + " " + user._id);
+        fest.attendees.push(user._id);
+        fest.save();
+        user.attended.push(fest._id);
+        user.save();
+        const categories = await Category.find().lean();
+        const festival = await Festival.findById(festID)
+          .populate("image")
+          .populate("addedBy")
+          .lean();
+
+        return h.view("edit", {
+          title: "Festival Details",
+          festival: festival,
+          categories: categories,
+        });
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   getDetails: {
