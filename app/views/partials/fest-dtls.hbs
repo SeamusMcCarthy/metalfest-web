@@ -50,3 +50,21 @@
     <a class="uk-button uk-button-primary" href="/attended/{{festival._id}}">Mark as Attended</a>
     <a class="uk-button uk-button-danger" href="/delete-festival/{{festival._id}}">Delete Festival</a>
 </p>
+
+<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+    <!--    <img src="{{festival.image.imageURL}}" alt="">-->
+    <table class="uk-table uk-table-divider">
+        <caption>
+            Festival Attendees:
+        </caption>
+        <thead>
+        <th>Name</th>
+        </thead>
+        <tbody class="uk-text-left">
+            {{#each festival.attendees}}
+                <tr>
+                    <td>{{this.firstName}} {{this.lastName}}</td>
+                </tr>
+            {{/ each}}
+        </tbody>
+    </table>

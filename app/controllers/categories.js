@@ -13,11 +13,7 @@ const Categories = {
           categoryName: data.category,
         });
         await newCategory.save();
-        const categories = await Category.find().lean();
-        return h.view("admin-home", {
-          title: "Festivals added to date",
-          categories: categories,
-        });
+        return h.redirect("/admin-home");
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
       }
