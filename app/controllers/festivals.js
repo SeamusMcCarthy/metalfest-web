@@ -21,10 +21,12 @@ const Festivals = {
   },
   adminhome: {
     handler: async function (request, h) {
-      const categories = await Category.find().lean();
+      const categories = await Category.find().sort("categoryName").lean();
+      const users = await User.find().populate("attended").lean();
       return h.view("admin-home", {
         title: "Admin Home",
         categories: categories,
+        users: users,
       });
     },
   },
@@ -84,24 +86,32 @@ const Festivals = {
   },
   showFestival: {
     handler: async function (request, h) {
-      const id = request.params.id;
-      const categories = await Category.find().lean();
-      const festival = await Festival.findById(id)
-        .populate("image")
-        .populate("addedBy")
-        .lean();
-      const calendarSDate = new Date(festival.startDate)
-        .toISOString()
-        .split("T");
-      const calendarEDate = new Date(festival.endDate).toISOString().split("T");
+      try {
+        const id = request.params.id;
+        const categories = await Category.find().lean();
+        const festival = await Festival.findById(id)
+          .populate("image")
+          .populate("addedBy")
+          .populate("attendees")
+          .lean();
+        console.log("Festival = " + festival);
+        const calendarSDate = new Date(festival.startDate)
+          .toISOString()
+          .split("T");
+        const calendarEDate = new Date(festival.endDate)
+          .toISOString()
+          .split("T");
 
-      return h.view("edit", {
-        title: "Festival Details",
-        festival: festival,
-        categories: categories,
-        calendarSDate: calendarSDate[0],
-        calendarEDate: calendarEDate[0],
-      });
+        return h.view("edit", {
+          title: "Festival Details",
+          festival: festival,
+          categories: categories,
+          calendarSDate: calendarSDate[0],
+          calendarEDate: calendarEDate[0],
+        });
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   editFestival: {
@@ -128,7 +138,7 @@ const Festivals = {
         fest.latitude = festEdit.latitude;
         fest.longitude = festEdit.longitude;
         await fest.save();
-        return h.redirect("/home");
+        return h.redirect("/select-home");
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
       }
@@ -142,11 +152,18 @@ const Festivals = {
   },
   deleteFestival: {
     handler: async function (request, h) {
-      const festID = request.params.id;
-      console.log("Festival ID : " + festID);
-      await Festival.deleteOne({ _id: festID });
-      return h.redirect("/home");
-      // return h.view("signup", { title: "Sign up for Metal Fest!!!" });
+      try {
+        const festID = request.params.id;
+        console.log("Festival ID : " + festID);
+        for await (const doc of User.find()) {
+          doc.attended.pull(festID);
+          doc.save();
+        }
+        await Festival.deleteOne({ _id: festID });
+        return h.redirect("/home");
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   attendedFestival: {
@@ -184,6 +201,7 @@ const Festivals = {
         const festival = await Festival.findById(id)
           .populate("addedBy")
           .populate("image")
+          .populate("attendees")
           .lean();
         const location = festival.city;
         const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
@@ -211,33 +229,33 @@ const Festivals = {
       }
     },
   },
-  fetchWeather: {
-    handler: async function (request, h) {
-      let weather = {};
-      // const location = document.getElementById("location-id").value;
-      const location = "Dublin, Ireland";
-      const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
-      try {
-        const response = await axios.get(weatherRequest);
-        if (response.status == 200) {
-          weather = response.data;
-
-          const report = {
-            feelsLike: Math.round(weather.main.feels_like - 273.15),
-            clouds: weather.weather[0].description,
-            windSpeed: weather.wind.speed,
-            windDirection: weather.wind.deg,
-            visibility: weather.visibility / 1000,
-            humidity: weather.main.humidity,
-          };
-          console.log(report);
-          // renderWeather(report)
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  },
+  // fetchWeather: {
+  //   handler: async function (request, h) {
+  //     let weather = {};
+  //     // const location = document.getElementById("location-id").value;
+  //     const location = "Dublin, Ireland";
+  //     const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
+  //     try {
+  //       const response = await axios.get(weatherRequest);
+  //       if (response.status == 200) {
+  //         weather = response.data;
+  //
+  //         const report = {
+  //           feelsLike: Math.round(weather.main.feels_like - 273.15),
+  //           clouds: weather.weather[0].description,
+  //           windSpeed: weather.wind.speed,
+  //           windDirection: weather.wind.deg,
+  //           visibility: weather.visibility / 1000,
+  //           humidity: weather.main.humidity,
+  //         };
+  //         console.log(report);
+  //         // renderWeather(report)
+  //       }
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   },
+  // },
 };
 
 module.exports = Festivals;

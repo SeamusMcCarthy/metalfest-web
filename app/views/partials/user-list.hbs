@@ -1,0 +1,23 @@
+<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+    <table id="user-table" class="uk-table">
+        <caption>
+            User List
+        </caption>
+        <thead>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>Delete</th>
+        </thead>
+        <tbody class="uk-text-left">
+                {{#each users}}
+                    <tr>
+                        <td>{{firstName}}</td>
+                        <td>{{lastName}}</td>
+                        <td>{{email}}</td>
+                        <td><a href="/delete-user/{{_id}}" uk-icon="icon: trash"></a></td>
+                    </tr>
+                {{/each}}
+        </tbody>
+    </table>
+</div>

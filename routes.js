@@ -19,11 +19,12 @@ module.exports = [
   { method: "POST", path: "/settings", config: Accounts.updateSettings },
   { method: "POST", path: "/add-category", config: Categories.addcategory },
   { method: "GET", path: "/admin-home", config: Festivals.adminhome },
-  { method: "GET", path: "/fest-weather", config: Festivals.fetchWeather },
+  // { method: "GET", path: "/fest-weather", config: Festivals.fetchWeather },
   { method: "GET", path: "/fest-dtls/{id}", config: Festivals.getDetails },
   { method: "GET", path: "/gallery", config: Gallery.index },
   { method: "POST", path: "/uploadfile", config: Gallery.uploadFile },
   { method: "GET", path: "/deleteimage/{id}", config: Gallery.deleteImage },
+  { method: "GET", path: "/select-home", config: Accounts.selectHome },
   {
     method: "GET",
     path: "/edit-festival/{id}",
@@ -40,6 +41,7 @@ module.exports = [
     config: Festivals.deleteFestival,
   },
   { method: "GET", path: "/attended/{id}", config: Festivals.attendedFestival },
+  { method: "GET", path: "/delete-user/{id}", config: Accounts.deleteUser },
 
   // Make public folder available to all routes
   {

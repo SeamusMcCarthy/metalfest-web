@@ -5,10 +5,23 @@
 
 <div class="uk-container uk-margin">
     <div class="uk-child-width-expand uk-flex-center uk-flex-middle uk-text-center" uk-grid>
-<!--        <div class="uk-width-auto@m">-->
-<!--            <img width="300" src="images/fest-main.jfif" />-->
-<!--        </div>-->
-        <div class="uk-width-expand@m">{{> category-list}}</div>
-        <div class="uk-width-expand@m">{{> add-category}}</div>
+        <div class="uk-width-expand@m">{{> user-list}}</div>
+    </div>
+</div>
+
+<div class="uk-container uk-margin">
+    <div class="uk-child-width-expand uk-flex-center uk-flex-middle uk-text-center" uk-grid>
+        <div class="uk-width-expand@m">
+            {{> add-category}}
+        </div>
+
+        <div class="uk-width-expand@m">
+            <div><caption>
+                Genre List
+            </caption></div>
+            <div class="uk-panel uk-panel-scrollable uk-height-large">
+                {{> category-list}}
+            </div>
+        </div>
     </div>
 </div>

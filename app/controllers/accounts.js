@@ -1,6 +1,7 @@
 "use strict";
 const Boom = require("@hapi/boom");
 const User = require("../models/user");
+const Festival = require("../models/festival");
 
 const Accounts = {
   index: {
@@ -37,6 +38,15 @@ const Accounts = {
       return h.view("login", { title: "Login to MetalFest!!!" });
     },
   },
+  selectHome: {
+    handler: async function (request, h) {
+      const id = request.auth.credentials.id;
+      const user = await User.findById(id).lean();
+      console.log("User type = " + user.userType);
+      if (user.userType == "regular") return h.redirect("/home");
+      else return h.redirect("/admin-home");
+    },
+  },
   login: {
     auth: false,
     handler: async function (request, h) {
@@ -50,7 +60,7 @@ const Accounts = {
         }
         user.comparePassword(password);
         request.cookieAuth.set({ id: user.id });
-        if (user.type == "admin") {
+        if (user.userType === "admin") {
           return h.redirect("/admin-home");
         } else {
           return h.redirect("/home");
@@ -71,9 +81,7 @@ const Accounts = {
     handler: async function (request, h) {
       const id = request.auth.credentials.id;
       const user = await User.findById(id).lean();
-      // var userEmail = request.auth.credentials.id;
-      // const userDetails = this.users[userEmail];
-      // return h.view("settings", { title: "User Settings", user: userDetails });
+
       return h.view("settings", {
         title: "User Settings",
         user: user,
@@ -91,6 +99,21 @@ const Accounts = {
       user.password = userEdit.password;
       await user.save();
       return h.redirect("/settings");
+    },
+  },
+  deleteUser: {
+    handler: async function (request, h) {
+      try {
+        const id = request.params.id;
+        for await (const doc of Festival.find()) {
+          doc.attendees.pull(id);
+          doc.save();
+        }
+        await User.deleteOne({ _id: id });
+        return h.redirect("/admin-home");
+      } catch (err) {
+        return h.view("login", { errors: [{ message: err.message }] });
+      }
     },
   },
 };
