@@ -1,4 +1,5 @@
-<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large uk-animation-scale-up">
+<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+    {{> admin-fest-card }}
     <table id="fest-table" class="uk-table">
         <caption>
             Festival List
@@ -18,7 +19,6 @@
                         <td>{{city}}</td>
                         <td>{{country}}</td>
                         <td class="uk-text-center"><a href="/fest-dtls/{{_id}}" uk-icon="icon: plus"></a></td>
-<!--                        <td><a href="/fest-dtls/{{_id}}" class="uk-icon-ellipsis-h"></a></td>-->
                     </tr>
                 {{/each}}
         </tbody>

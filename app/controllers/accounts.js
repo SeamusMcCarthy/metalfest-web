@@ -19,17 +19,27 @@ const Accounts = {
   signup: {
     auth: false,
     handler: async function (request, h) {
-      const payload = request.payload;
-      const newUser = new User({
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        email: payload.email,
-        password: payload.password,
-        userType: "regular",
-      });
-      const user = await newUser.save();
-      request.cookieAuth.set({ id: user.id });
-      return h.redirect("/home");
+      try {
+        const payload = request.payload;
+        let checkUser = await User.findByEmail(payload.email);
+        if (checkUser) {
+          const message = "Email address is already registered";
+          console.log(message);
+          throw Boom.unauthorized(message);
+        }
+        const newUser = new User({
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          email: payload.email,
+          password: payload.password,
+          userType: "regular",
+        });
+        const user = await newUser.save();
+        request.cookieAuth.set({ id: user.id });
+        return h.redirect("/home");
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   showLogin: {
@@ -42,7 +52,6 @@ const Accounts = {
     handler: async function (request, h) {
       const id = request.auth.credentials.id;
       const user = await User.findById(id).lean();
-      console.log("User type = " + user.userType);
       if (user.userType == "regular") return h.redirect("/home");
       else return h.redirect("/admin-home");
     },
@@ -55,7 +64,6 @@ const Accounts = {
         let user = await User.findByEmail(email);
         if (!user) {
           const message = "Email address is not registered";
-          console.log(message);
           throw Boom.unauthorized(message);
         }
         user.comparePassword(password);

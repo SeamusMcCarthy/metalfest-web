@@ -41,6 +41,7 @@ async function init() {
     partialsPath: "./app/views/partials",
     layout: true,
     isCached: false,
+    helpersPath: "./app/utils/helpers",
   });
 
   // Initialise Hapi Cookie

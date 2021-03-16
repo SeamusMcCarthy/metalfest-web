@@ -6,28 +6,43 @@ const Image = require("../models/image");
 const apiKey = process.env.weather_api;
 const axios = require("axios");
 const ImageStore = require("../utils/image-store");
+const Boom = require("@hapi/boom");
 
 const Festivals = {
   home: {
     handler: async function (request, h) {
-      const categories = await Category.find().lean();
-      const festivals = await Festival.findByStatus("pending").lean();
-      return h.view("home", {
-        title: "Add a festival",
-        categories: categories,
-        festivals: festivals,
-      });
+      try {
+        const categories = await Category.find().lean();
+        const festivals = await Festival.find().lean();
+        return h.view("home", {
+          title: "Add a festival",
+          categories: categories,
+          festivals: festivals,
+        });
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   adminhome: {
     handler: async function (request, h) {
-      const categories = await Category.find().sort("categoryName").lean();
-      const users = await User.find().populate("attended").lean();
-      return h.view("admin-home", {
-        title: "Admin Home",
-        categories: categories,
-        users: users,
-      });
+      try {
+        const categories = await Category.find().sort("categoryName").lean();
+        const users = await User.find().populate("attended").lean();
+        const userCount = await User.find().countDocuments();
+        const festCount = await Festival.find().countDocuments();
+        const festivals = await Festival.find().lean();
+        return h.view("admin-home", {
+          title: "Admin Home",
+          categories: categories,
+          users: users,
+          usercount: userCount,
+          festcount: festCount,
+          festivals: festivals,
+        });
+      } catch (err) {
+        return h.view("main", { errors: [{ message: err.message }] });
+      }
     },
   },
   report: {
@@ -56,6 +71,11 @@ const Festivals = {
         const id = request.auth.credentials.id;
         const user = await User.findById(id);
         const data = request.payload;
+        let festExists = await Festival.findByName(data.name);
+        if (festExists) {
+          const message = "Festival already exists";
+          throw Boom.unauthorized(message);
+        }
         const newFestival = new Festival({
           name: data.name,
           city: data.city,
@@ -87,6 +107,7 @@ const Festivals = {
   showFestival: {
     handler: async function (request, h) {
       try {
+        const userID = request.auth.credentials.id;
         const id = request.params.id;
         const categories = await Category.find().lean();
         const festival = await Festival.findById(id)
@@ -94,7 +115,6 @@ const Festivals = {
           .populate("addedBy")
           .populate("attendees")
           .lean();
-        console.log("Festival = " + festival);
         const calendarSDate = new Date(festival.startDate)
           .toISOString()
           .split("T");
@@ -173,6 +193,7 @@ const Festivals = {
         const user = await User.findById(id);
         const festID = request.params.id;
         const fest = await Festival.findById(festID);
+        fest.checkAttendance(id);
         console.log("Fest name " + fest.name + " " + user._id);
         fest.attendees.push(user._id);
         fest.save();
@@ -184,11 +205,7 @@ const Festivals = {
           .populate("addedBy")
           .lean();
 
-        return h.view("edit", {
-          title: "Festival Details",
-          festival: festival,
-          categories: categories,
-        });
+        return h.redirect("/report");
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
       }
@@ -197,7 +214,14 @@ const Festivals = {
   getDetails: {
     handler: async function (request, h) {
       try {
+        const userID = request.auth.credentials.id;
+        const user = await User.findById(userID);
         const id = request.params.id;
+        const fest = await Festival.findById(id);
+        let attendance = "";
+        if (fest.attendees.includes(user._id)) {
+          attendance = "Y";
+        }
         const festival = await Festival.findById(id)
           .populate("addedBy")
           .populate("image")
@@ -223,39 +247,13 @@ const Festivals = {
           title: festival.name,
           festival: festival,
           report: report,
+          attendance: attendance,
         });
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
       }
     },
   },
-  // fetchWeather: {
-  //   handler: async function (request, h) {
-  //     let weather = {};
-  //     // const location = document.getElementById("location-id").value;
-  //     const location = "Dublin, Ireland";
-  //     const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
-  //     try {
-  //       const response = await axios.get(weatherRequest);
-  //       if (response.status == 200) {
-  //         weather = response.data;
-  //
-  //         const report = {
-  //           feelsLike: Math.round(weather.main.feels_like - 273.15),
-  //           clouds: weather.weather[0].description,
-  //           windSpeed: weather.wind.speed,
-  //           windDirection: weather.wind.deg,
-  //           visibility: weather.visibility / 1000,
-  //           humidity: weather.main.humidity,
-  //         };
-  //         console.log(report);
-  //         // renderWeather(report)
-  //       }
-  //     } catch (error) {
-  //       console.log(error);
-  //     }
-  //   },
-  // },
 };
 
 module.exports = Festivals;

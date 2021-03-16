@@ -47,7 +47,13 @@
 
 <p uk-margin>
     <a class="uk-button uk-button-primary" href="/edit-festival/{{festival._id}}">Edit Festival</a>
-    <a class="uk-button uk-button-primary" href="/attended/{{festival._id}}">Mark as Attended</a>
+<!--    {{{checkAttendance attendance}}}-->
+    {{#if attendance}}
+        <a class="uk-button uk-button-default" href="#">Already Attended</a>
+    {{else}}
+        <a class="uk-button uk-button-primary" href="/attended/{{festival._id}}">Mark as Attended</a>
+    {{/if}}
+
     <a class="uk-button uk-button-danger" href="/delete-festival/{{festival._id}}">Delete Festival</a>
 </p>
 

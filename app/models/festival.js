@@ -1,5 +1,6 @@
 "use strict";
 
+const Boom = require("@hapi/boom");
 const Mongoose = require("mongoose");
 const Schema = Mongoose.Schema;
 
@@ -13,6 +14,12 @@ const festivalSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Image",
   },
+  userImages: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Image",
+    },
+  ],
   latitude: Number,
   longitude: Number,
   startDate: Date,
@@ -32,6 +39,17 @@ const festivalSchema = new Schema({
 
 festivalSchema.statics.findByStatus = function (status) {
   return this.find({ approvalStatus: status });
+};
+
+festivalSchema.statics.findByName = function (festName) {
+  return this.find({ name: festName });
+};
+
+festivalSchema.methods.checkAttendance = function (userID) {
+  if (this.attendees.includes(userID)) {
+    throw Boom.unauthorized("Already listed as attended");
+  }
+  return this;
 };
 
 module.exports = Mongoose.model("Festival", festivalSchema);
