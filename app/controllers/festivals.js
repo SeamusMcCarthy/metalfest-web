@@ -50,9 +50,13 @@ const Festivals = {
       // const festivals = await Festival.find().populate("donor").lean();
       // const festivals = await Festival.find().lean();
       const festivals = await Festival.findByStatus("pending").lean();
+      const categories = await Category.find()
+        .populate("categoryFestivals")
+        .lean();
       return h.view("report", {
         title: "Festivals added to date",
         festivals: festivals,
+        categories: categories,
       });
     },
   },
@@ -71,8 +75,9 @@ const Festivals = {
         const id = request.auth.credentials.id;
         const user = await User.findById(id);
         const data = request.payload;
+
         let festExists = await Festival.findByName(data.name);
-        if (festExists) {
+        if (festExists.length > 0) {
           const message = "Festival already exists";
           throw Boom.unauthorized(message);
         }
@@ -81,7 +86,7 @@ const Festivals = {
           city: data.city,
           country: data.country,
           description: data.description,
-          category: data.category,
+          category: [],
           latitude: data.latitude,
           longitude: data.longitude,
           startDate: data.startDate,
@@ -91,7 +96,17 @@ const Festivals = {
           addedBy: user._id,
           attendees: [],
         });
+        // Add the festival entry to the genre category
         await newFestival.save();
+
+        for (const cat of data.category) {
+          const catID = await Category.findByName(cat);
+          catID.categoryFestivals.push(newFestival._id);
+          await catID.save();
+          newFestival.category.push(catID._id);
+        }
+        await newFestival.save();
+
         return h.redirect("/report");
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
@@ -174,10 +189,12 @@ const Festivals = {
     handler: async function (request, h) {
       try {
         const festID = request.params.id;
-        console.log("Festival ID : " + festID);
         for await (const doc of User.find()) {
           doc.attended.pull(festID);
           doc.save();
+        }
+        for await (const doc of Category.find()) {
+          doc.categoryFestivals.pull(festID);
         }
         await Festival.deleteOne({ _id: festID });
         return h.redirect("/home");
@@ -194,7 +211,6 @@ const Festivals = {
         const festID = request.params.id;
         const fest = await Festival.findById(festID);
         fest.checkAttendance(id);
-        console.log("Fest name " + fest.name + " " + user._id);
         fest.attendees.push(user._id);
         fest.save();
         user.attended.push(fest._id);
@@ -231,6 +247,7 @@ const Festivals = {
         const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
         let weather = {};
         const response = await axios.get(weatherRequest);
+        console.log(response.status);
         if (response.status == 200) {
           weather = response.data;
         }
@@ -242,12 +259,15 @@ const Festivals = {
           visibility: weather.visibility / 1000,
           humidity: weather.main.humidity,
         };
-        // console.log(report);
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         return h.view("festival", {
           title: festival.name,
           festival: festival,
           report: report,
           attendance: attendance,
+          categories: categories,
         });
       } catch (err) {
         return h.view("main", { errors: [{ message: err.message }] });
