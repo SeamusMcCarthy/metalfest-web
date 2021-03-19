@@ -2,18 +2,31 @@
 const Boom = require("@hapi/boom");
 const User = require("../models/user");
 const Festival = require("../models/festival");
+const Category = require("../models/category");
 
 const Accounts = {
   index: {
     auth: false,
-    handler: function (request, h) {
-      return h.view("main", { title: "Welcome to Metal Fest!!!" });
+    handler: async function (request, h) {
+      const categories = await Category.find()
+        .populate("categoryFestivals")
+        .lean();
+      return h.view("main", {
+        title: "Welcome to Metal Fest!!!",
+        categories: categories,
+      });
     },
   },
   showSignup: {
     auth: false,
-    handler: function (request, h) {
-      return h.view("signup", { title: "Sign up for Metal Fest!!!" });
+    handler: async function (request, h) {
+      const categories = await Category.find()
+        .populate("categoryFestivals")
+        .lean();
+      return h.view("signup", {
+        title: "Sign up for Metal Fest!!!",
+        categories: categories,
+      });
     },
   },
   signup: {
@@ -34,18 +47,30 @@ const Accounts = {
           password: payload.password,
           userType: "regular",
         });
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         const user = await newUser.save();
         request.cookieAuth.set({ id: user.id });
         return h.redirect("/home");
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
   showLogin: {
     auth: false,
-    handler: function (request, h) {
-      return h.view("login", { title: "Login to MetalFest!!!" });
+    handler: async function (request, h) {
+      const categories = await Category.find()
+        .populate("categoryFestivals")
+        .lean();
+      return h.view("login", {
+        title: "Login to MetalFest!!!",
+        categories: categories,
+      });
     },
   },
   selectHome: {
@@ -61,6 +86,9 @@ const Accounts = {
     handler: async function (request, h) {
       const { email, password } = request.payload;
       try {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         let user = await User.findByEmail(email);
         if (!user) {
           const message = "Email address is not registered";
@@ -74,7 +102,10 @@ const Accounts = {
           return h.redirect("/home");
         }
       } catch (err) {
-        return h.view("login", { errors: [{ message: err.message }] });
+        return h.view("login", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
@@ -87,12 +118,16 @@ const Accounts = {
   },
   showSettings: {
     handler: async function (request, h) {
+      const categories = await Category.find()
+        .populate("categoryFestivals")
+        .lean();
       const id = request.auth.credentials.id;
       const user = await User.findById(id).lean();
 
       return h.view("settings", {
         title: "User Settings",
         user: user,
+        categories: categories,
       });
     },
   },
@@ -112,6 +147,9 @@ const Accounts = {
   deleteUser: {
     handler: async function (request, h) {
       try {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         const id = request.params.id;
         for await (const doc of Festival.find()) {
           doc.attendees.pull(id);
@@ -120,7 +158,10 @@ const Accounts = {
         await User.deleteOne({ _id: id });
         return h.redirect("/admin-home");
       } catch (err) {
-        return h.view("login", { errors: [{ message: err.message }] });
+        return h.view("login", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },

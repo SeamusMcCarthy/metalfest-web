@@ -45,19 +45,13 @@
             <div>
                 <span>Please select a festival genre</span>
             </div>
-<!--            <div uk-form-custom="target: > * > span:first-child">-->
                 <div class="dropdown example">
-<!--                <select name="category" id="category" multiple >-->
                 <select name="category" id="category" multiple="" class="ui fluid dropdown" >
                     <option value="">Genres</option>
                     {{#each categories}}
                         <option value="{{categoryName}}">{{categoryName}}</option>
                     {{/each}}
                 </select>
-<!--                <button class="uk-button uk-button-default" type="button" tabindex="-1">-->
-<!--                    <span></span>-->
-<!--                    <span uk-icon="icon: chevron-down"></span>-->
-<!--                </button>-->
             </div>
         </div>
         {{> upload }}

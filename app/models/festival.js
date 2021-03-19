@@ -19,12 +19,12 @@ const festivalSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: "Image",
   },
-  userImages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Image",
-    },
-  ],
+  // userImages: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "Image",
+  //   },
+  // ],
   latitude: Number,
   longitude: Number,
   startDate: Date,

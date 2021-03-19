@@ -12,7 +12,9 @@ const Festivals = {
   home: {
     handler: async function (request, h) {
       try {
-        const categories = await Category.find().lean();
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         const festivals = await Festival.find().lean();
         return h.view("home", {
           title: "Add a festival",
@@ -20,17 +22,24 @@ const Festivals = {
           festivals: festivals,
         });
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
   adminhome: {
     handler: async function (request, h) {
       try {
-        const categories = await Category.find().sort("categoryName").lean();
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const users = await User.find().populate("attended").lean();
         const userCount = await User.find().countDocuments();
         const festCount = await Festival.find().countDocuments();
+        const genreCount = await Category.find().countDocuments();
         const festivals = await Festival.find().lean();
         return h.view("admin-home", {
           title: "Admin Home",
@@ -38,19 +47,22 @@ const Festivals = {
           users: users,
           usercount: userCount,
           festcount: festCount,
+          genrecount: genreCount,
           festivals: festivals,
         });
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
   report: {
     handler: async function (request, h) {
-      // const festivals = await Festival.find().populate("donor").lean();
-      // const festivals = await Festival.find().lean();
-      const festivals = await Festival.findByStatus("pending").lean();
+      const festivals = await Festival.find().lean();
       const categories = await Category.find()
+        .sort("categoryName")
         .populate("categoryFestivals")
         .lean();
       return h.view("report", {
@@ -60,13 +72,21 @@ const Festivals = {
       });
     },
   },
+
   addfest: {
     handler: async function (request, h) {
       try {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const file = request.payload.imagefile;
 
         // if (Object.keys(file).length > 0) {
-        const image = await ImageStore.uploadImage(request.payload.imagefile);
+        const image = await ImageStore.uploadImage(
+          request.payload.imagefile,
+          request.payload.name
+        );
         const newImage = new Image({
           imageURL: image.url,
         });
@@ -109,7 +129,10 @@ const Festivals = {
 
         return h.redirect("/report");
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
     payload: {
@@ -119,12 +142,16 @@ const Festivals = {
       parse: true,
     },
   },
+
   showFestival: {
     handler: async function (request, h) {
       try {
         const userID = request.auth.credentials.id;
         const id = request.params.id;
-        const categories = await Category.find().lean();
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const festival = await Festival.findById(id)
           .populate("image")
           .populate("addedBy")
@@ -145,16 +172,26 @@ const Festivals = {
           calendarEDate: calendarEDate[0],
         });
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
   editFestival: {
     handler: async function (request, h) {
       try {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const file = request.payload.imagefile;
         // if (Object.keys(file).length > 0) {
-        const image = await ImageStore.uploadImage(request.payload.imagefile);
+        const image = await ImageStore.uploadImage(
+          request.payload.imagefile,
+          request.payload.name
+        );
         const newImage = new Image({
           imageURL: image.url,
         });
@@ -166,16 +203,27 @@ const Festivals = {
         fest.city = festEdit.city;
         fest.country = festEdit.country;
         fest.description = festEdit.description;
-        fest.category = festEdit.category;
+        fest.category = [];
         fest.startDate = festEdit.startDate;
         fest.endDate = festEdit.endDate;
         fest.image = newImage._id;
         fest.latitude = festEdit.latitude;
         fest.longitude = festEdit.longitude;
         await fest.save();
+
+        for (const cat of festEdit.category) {
+          const catID = await Category.findByName(cat);
+          catID.categoryFestivals.push(fest._id);
+          await catID.save();
+          fest.category.push(catID._id);
+        }
+        await fest.save();
         return h.redirect("/select-home");
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
     payload: {
@@ -188,6 +236,10 @@ const Festivals = {
   deleteFestival: {
     handler: async function (request, h) {
       try {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const festID = request.params.id;
         for await (const doc of User.find()) {
           doc.attended.pull(festID);
@@ -199,7 +251,10 @@ const Festivals = {
         await Festival.deleteOne({ _id: festID });
         return h.redirect("/home");
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
@@ -215,7 +270,10 @@ const Festivals = {
         fest.save();
         user.attended.push(fest._id);
         user.save();
-        const categories = await Category.find().lean();
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         const festival = await Festival.findById(festID)
           .populate("image")
           .populate("addedBy")
@@ -223,7 +281,10 @@ const Festivals = {
 
         return h.redirect("/report");
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
@@ -247,7 +308,6 @@ const Festivals = {
         const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}`;
         let weather = {};
         const response = await axios.get(weatherRequest);
-        console.log(response.status);
         if (response.status == 200) {
           weather = response.data;
         }
@@ -260,17 +320,23 @@ const Festivals = {
           humidity: weather.main.humidity,
         };
         const categories = await Category.find()
+          .sort("categoryName")
           .populate("categoryFestivals")
           .lean();
+        const images = await ImageStore.getImagesByTag(festival.name);
         return h.view("festival", {
           title: festival.name,
           festival: festival,
           report: report,
           attendance: attendance,
           categories: categories,
+          images: images,
         });
       } catch (err) {
-        return h.view("main", { errors: [{ message: err.message }] });
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
       }
     },
   },
