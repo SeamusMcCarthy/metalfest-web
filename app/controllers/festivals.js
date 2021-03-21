@@ -101,6 +101,10 @@ const Festivals = {
           const message = "Festival already exists";
           throw Boom.unauthorized(message);
         }
+        if (data.endDate < data.startDate) {
+          const message = "Festival end date is before start date";
+          throw Boom.unauthorized(message);
+        }
         const newFestival = new Festival({
           name: data.name,
           city: data.city,
@@ -197,6 +201,12 @@ const Festivals = {
         });
         await newImage.save();
         const festEdit = request.payload;
+
+        if (festEdit.endDate < festEdit.startDate) {
+          const message = "Festival end date is before start date";
+          throw Boom.unauthorized(message);
+        }
+
         const id = request.params.id;
         const fest = await Festival.findById(id);
         fest.name = festEdit.name;

@@ -43,6 +43,35 @@ const Gallery = {
     },
   },
 
+  uploadAddImage: {
+    handler: async function (request, h) {
+      try {
+        const file = request.payload.imagefile;
+        if (Object.keys(file).length > 0) {
+          console.log(request.payload.imagefile);
+          const image = await ImageStore.uploadImageWithTag(
+            request.payload.imagefile,
+            request.payload.festName
+          );
+          console.log(image.url);
+          return h.redirect("/fest-dtls/" + request.payload.festID);
+        }
+        return h.view("gallery", {
+          title: "Cloudinary Gallery",
+          error: "No file selected",
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    payload: {
+      multipart: true,
+      output: "data",
+      maxBytes: 209715200,
+      parse: true,
+    },
+  },
+
   deleteImage: {
     handler: async function (request, h) {
       try {

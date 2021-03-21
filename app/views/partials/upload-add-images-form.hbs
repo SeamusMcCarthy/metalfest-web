@@ -1,13 +1,23 @@
-<div class="uk-margin uk-width-2xlarge uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
+<div class="uk-margin uk-width-1-1 uk-margin-auto uk-card uk-card-default uk-card-body uk-box-shadow-large">
     <form action="/upload-add-image" method="POST" enctype="multipart/form-data" >
-        <div class="uk-margin">
+        <div >
             <div class="uk-inline uk-width-1-1">
-                <input class="uk-input uk-form-large" type="text" name="festName" value="{{festival.name}}" required/>
+                <input class="uk-input uk-form-large" type="text" name="festName" value="{{festival.name}}" hidden/>
+                <input class="uk-input uk-form-large" type="text" name="festID" value="{{festival._id}}" hidden/>
             </div>
         </div>
-        {{> upload-add-images }}
+        <div class="uk-card">
+            <h3 class="uk-card-title">Upload your pics!!!</h3>
+            <div class="uk-margin">
+                <label class="uk-form-label" for="form-horizontal-text">Select Image</label>
+                <div class="uk-form-controls">
+                    <input type="file" class="uk-input" name="imagefile" accept="image/png, image/jpeg">
+                </div>
+            </div>
+        </div>
         <div class="uk-margin">
             <button class="uk-button uk-button-primary uk-button-large uk-width-1-1">Add image</button>
         </div>
     </form>
+    {{> fest-gallery }}
 </div>

@@ -25,6 +25,7 @@ module.exports = [
   { method: "POST", path: "/uploadfile", config: Gallery.uploadFile },
   { method: "GET", path: "/deleteimage/{id}", config: Gallery.deleteImage },
   { method: "GET", path: "/select-home", config: Accounts.selectHome },
+  { method: "POST", path: "/upload-add-image", config: Gallery.uploadAddImage },
   {
     method: "GET",
     path: "/edit-festival/{id}",

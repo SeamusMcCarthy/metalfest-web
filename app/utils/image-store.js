@@ -19,12 +19,10 @@ const ImageStore = {
     const result = await cloudinary.v2.search
       .expression("tags:" + tagName)
       .execute();
-    // console.log(result);
     return result.resources;
   },
   getAllImages: async function () {
     const result = await cloudinary.v2.api.resources();
-    console.log(result);
     return result.resources;
   },
 
