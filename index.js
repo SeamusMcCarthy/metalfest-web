@@ -8,6 +8,7 @@ const Inert = require("@hapi/inert");
 const Vision = require("@hapi/vision");
 const Handlebars = require("handlebars");
 const Cookie = require("@hapi/cookie");
+const Joi = require("@hapi/joi");
 const env = require("dotenv");
 
 env.config();
@@ -29,6 +30,8 @@ async function init() {
   await server.register(Cookie);
 
   ImageStore.configure();
+
+  server.validator(require("@hapi/joi"));
 
   // Setup for Hapi Vision rendering
   server.views({

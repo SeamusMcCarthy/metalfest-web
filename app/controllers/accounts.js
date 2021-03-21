@@ -1,5 +1,6 @@
 "use strict";
 const Boom = require("@hapi/boom");
+const Joi = require("@hapi/joi");
 const User = require("../models/user");
 const Festival = require("../models/festival");
 const Category = require("../models/category");
@@ -31,6 +32,23 @@ const Accounts = {
   },
   signup: {
     auth: false,
+    validate: {
+      payload: {
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
+      },
+      failAction: function (request, h, error) {
+        return h
+          .view("main", {
+            title: "Sign up error",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
+      },
+    },
     handler: async function (request, h) {
       try {
         const payload = request.payload;
@@ -132,6 +150,23 @@ const Accounts = {
     },
   },
   updateSettings: {
+    validate: {
+      payload: {
+        firstName: Joi.string().required(),
+        lastName: Joi.string().required(),
+        email: Joi.string().email().required(),
+        password: Joi.string().required(),
+      },
+      failAction: function (request, h, error) {
+        return h
+          .view("main", {
+            title: "Error updating details",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
+      },
+    },
     handler: async function (request, h) {
       const userEdit = request.payload;
       const id = request.auth.credentials.id;

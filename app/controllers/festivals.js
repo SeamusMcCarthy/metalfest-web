@@ -7,6 +7,7 @@ const apiKey = process.env.weather_api;
 const axios = require("axios");
 const ImageStore = require("../utils/image-store");
 const Boom = require("@hapi/boom");
+const Joi = require("@hapi/joi");
 
 const Festivals = {
   home: {
@@ -74,6 +75,27 @@ const Festivals = {
   },
 
   addfest: {
+    validate: {
+      payload: {
+        name: Joi.string().required(),
+        city: Joi.string().required(),
+        country: Joi.string().required(),
+        description: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
+      },
+      failAction: function (request, h, error) {
+        return h
+          .view("main", {
+            title: "Error adding festival",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
+      },
+    },
     handler: async function (request, h) {
       try {
         const categories = await Category.find()
@@ -184,6 +206,27 @@ const Festivals = {
     },
   },
   editFestival: {
+    validate: {
+      payload: {
+        name: Joi.string().required(),
+        city: Joi.string().required(),
+        country: Joi.string().required(),
+        description: Joi.string().required(),
+        latitude: Joi.number().required(),
+        longitude: Joi.number().required(),
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
+      },
+      failAction: function (request, h, error) {
+        return h
+          .view("main", {
+            title: "Error adding festival",
+            errors: error.details,
+          })
+          .takeover()
+          .code(400);
+      },
+    },
     handler: async function (request, h) {
       try {
         const categories = await Category.find()
