@@ -22,9 +22,7 @@ const Gallery = {
       try {
         const file = request.payload.imagefile;
         if (Object.keys(file).length > 0) {
-          console.log(request.payload.imagefile);
           const image = await ImageStore.uploadImage(request.payload.imagefile);
-          console.log(image.url);
           return h.redirect("/");
         }
         return h.view("gallery", {
