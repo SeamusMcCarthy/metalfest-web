@@ -10,6 +10,9 @@ const Categories = {
       payload: {
         category: Joi.string().required(),
       },
+      options: {
+        abortEarly: false,
+      },
       failAction: function (request, h, error) {
         return h
           .view("main", {

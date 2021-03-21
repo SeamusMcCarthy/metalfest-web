@@ -86,6 +86,10 @@ const Festivals = {
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
       },
+      options: {
+        abortEarly: false,
+        allowUnknown: true,
+      },
       failAction: function (request, h, error) {
         return h
           .view("main", {
@@ -216,6 +220,10 @@ const Festivals = {
         longitude: Joi.number().required(),
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
+      },
+      options: {
+        abortEarly: false,
+        allowUnknown: true,
       },
       failAction: function (request, h, error) {
         return h

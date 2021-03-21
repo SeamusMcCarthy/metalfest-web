@@ -39,6 +39,9 @@ const Accounts = {
         email: Joi.string().email().required(),
         password: Joi.string().required(),
       },
+      options: {
+        abortEarly: false,
+      },
       failAction: function (request, h, error) {
         return h
           .view("main", {
@@ -156,6 +159,9 @@ const Accounts = {
         lastName: Joi.string().required(),
         email: Joi.string().email().required(),
         password: Joi.string().required(),
+      },
+      options: {
+        abortEarly: false,
       },
       failAction: function (request, h, error) {
         return h
