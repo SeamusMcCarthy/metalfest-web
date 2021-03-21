@@ -19,18 +19,22 @@ const ImageStore = {
     const result = await cloudinary.v2.search
       .expression("tags:" + tagName)
       .execute();
-    console.log(result);
     return result.resources;
   },
   getAllImages: async function () {
     const result = await cloudinary.v2.api.resources();
-    console.log(result);
     return result.resources;
   },
 
   uploadImage: async function (imagefile) {
     await writeFile("./public/temp.img", imagefile);
     const result = await cloudinary.uploader.upload("./public/temp.img");
+    return result;
+  },
+  uploadImageWithTag: async function (imagefile, tag) {
+    await writeFile("./public/temp.img", imagefile);
+    const result = await cloudinary.uploader.upload("./public/temp.img");
+    const updImg = await cloudinary.uploader.add_tag(tag, result.public_id);
     return result;
   },
 

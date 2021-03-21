@@ -1,8 +1,35 @@
 <div class="uk-width-2-3@m  uk-card uk-card-default uk-padding-small uk-visible@m">
     <div class="uk-grid">
-        <div class="uk-width-1-6@m">
+        <div>
+<!--            <button class="uk-button uk-button-default uk-margin-small-right" type="button" uk-toggle="target: #offcanvas-push">Open</button>-->
+            <a href="#offcanvas-push" uk-toggle>
+                <i class="fas fa-compass fa-3x" style="color:rgb(95, 96, 173)" title="Open Menu" pos="bottom" uk-tooltip></i>
+                <div class="uk-width-expand@m uk-text-left">
+                    <div class="uk-text-muted uk-text-center" style="font-size:xx-small">Open Menu</div>
+                </div>
+            </a>
+            <div id="offcanvas-push" uk-offcanvas="mode: push; overlay: true">
+                <div class="uk-offcanvas-bar">
+                    <button class="uk-offcanvas-close" type="button" uk-close></button>
+                    <div class="uk-width-1-2@s uk-width-2-5@m">
+                        <ul class="uk-nav uk-nav-default">
+                            {{#each categories}}
+                                <li class="uk-nav-header">{{categoryName}}</li>
+                                <li class="uk-nav-divider"></li>
+                                {{#each categoryFestivals}}
+                                    <li><a href="/fest-dtls/{{this._id}}">{{this.name}}</a></li>
+                                {{/each}}
+                            {{/each}}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="uk-width-auto">
             <a href="/select-home" class="uk-card-hover">
-            <i class="fas fa-guitar fa-3x" style="color:rgb(95, 96, 173)" title="Home Page" pos="bottom" uk-tooltip></i>
+<!--            <i class="fas fa-guitar fa-3x" style="color:rgb(95, 96, 173)" title="Home Page" pos="bottom" uk-tooltip></i>-->
+                <img width="60" src="/images/logo.png" alt="">
+
             </a>
         </div>
         <div class="uk-width-expand@m uk-text-left">
@@ -10,9 +37,12 @@
             <div class="uk-text-muted uk-text-small">{{subtitle}}</div>
         </div>
         <div class="uk-card uk-card-small uk-text-center uk-padding-remove">
-            <a target="”_blank”" href="https://github.com/tutors-sdk/tutors-svelte">
-                <div>
-                    <i class="fab fa-github fa-3x" style="color:rgb(95, 96, 173)" title="Source repo" pos="bottom" uk-tooltip></i>
+            <a target="”_blank”" href="https://github.com/SeamusMcCarthy/metalfest-web">
+                <div class="uk-flex-middle" style="position: relative">
+                    <i class="fab fa-github fa-3x" style="color:rgb(95,96,173); " title="Source repo" pos="bottom" uk-tooltip></i>
+                </div>
+                <div class="uk-width-expand@m uk-text-left">
+                    <div class="uk-text-muted uk-text-center" style="font-size:xx-small">Source Repo</div>
                 </div>
             </a>
         </div>

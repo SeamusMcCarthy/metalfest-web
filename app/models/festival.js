@@ -9,17 +9,22 @@ const festivalSchema = new Schema({
   city: String,
   country: String,
   description: String,
-  category: String,
+  category: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Category",
+    },
+  ],
   image: {
     type: Schema.Types.ObjectId,
     ref: "Image",
   },
-  userImages: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Image",
-    },
-  ],
+  // userImages: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "Image",
+  //   },
+  // ],
   latitude: Number,
   longitude: Number,
   startDate: Date,
