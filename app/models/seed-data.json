@@ -1,0 +1,169 @@
+{
+  "users": {
+    "_model": "User",
+    "homer": {
+      "firstName": "Homer",
+      "lastName": "Simpson",
+      "email": "homer@simpson.com",
+      "password": "secret",
+      "userType": "regular"
+    },
+    "lisa": {
+      "firstName": "Lisa",
+      "lastName": "Simpson",
+      "email": "lisa@simpson.com",
+      "password": "secret",
+      "userType": "regular"
+    },
+    "admin": {
+      "firstName": "Admin",
+      "lastName": "Simpson",
+      "email": "admin@simpson.com",
+      "password": "secret",
+      "userType": "admin"
+    }
+  },
+  "images": {
+    "_model": "Image",
+    "graspop": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616436604/Graspop_amanow.jpg"
+    },
+    "hellfest": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616436604/Hellfest19_mnznet.jpg"
+    },
+    "wacken": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616436604/Hellfest19_mnznet.jpg"
+    },
+    "tuska": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616450390/tuska_o6xsi8.jpg"
+    },
+    "metalcamp": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616450391/metalcamp_cdlbaq.jpg"
+    },
+    "bloodstock": {
+      "imageURL": "https://res.cloudinary.com/semcwit/image/upload/v1616450391/Bloodstock_mbpmdc.jpg"
+    }
+  },
+  "festivals": {
+    "_model": "Festival",
+    "graspop": {
+      "name": "Graspop",
+      "city": "Dessel",
+      "country": "Belgium",
+      "description": "Large fest in Belgium",
+      "image": "->images.graspop",
+      "latitude": 54.2421,
+      "longitude": 5.1121,
+      "startDate": "2021-06-17",
+      "endDate": "2021-06-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.homer",
+      "attendees": ["->users.homer","->users.admin"]
+    },
+    "hellfest": {
+      "name": "Hellfest",
+      "city": "Clisson",
+      "country": "France",
+      "description": "Large fest in France",
+      "image": "->images.hellfest",
+      "latitude": 52.2421,
+      "longitude": 11.1121,
+      "startDate": "2021-06-17",
+      "endDate": "2021-06-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.admin",
+      "attendees": ["->users.homer","->users.admin"]
+    },
+    "wacken": {
+      "name": "Wacken",
+      "city": "Wacken",
+      "country": "Germany",
+      "description": "Large fest in Germany",
+      "image": "->images.wacken",
+      "latitude": 52.2421,
+      "longitude": 11.1121,
+      "startDate": "2021-08-16",
+      "endDate": "2021-08-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.homer",
+      "attendees": ["->users.homer","->users.admin"]
+    },
+    "tuska": {
+      "name": "Tuska",
+      "city": "Helsinki",
+      "country": "Finland",
+      "description": "Medium fest in Finland",
+      "image": "->images.tuska",
+      "latitude": 52.2421,
+      "longitude": 11.1121,
+      "startDate": "2021-08-16",
+      "endDate": "2021-08-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.lisa",
+      "attendees": ["->users.lisa","->users.admin"]
+    },
+    "metalcamp": {
+      "name": "Metalcamp",
+      "city": "Tolmin",
+      "country": "Slovenia",
+      "description": "Weeklong fest by a lake",
+      "image": "->images.metalcamp",
+      "latitude": 52.2421,
+      "longitude": 11.1121,
+      "startDate": "2021-08-16",
+      "endDate": "2021-08-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.homer",
+      "attendees": ["->users.homer","->users.lisa"]
+    },
+    "bloodstock": {
+      "name": "Bloodstock",
+      "city": "Catton Hall",
+      "country": "England",
+      "description": "Medium sized fest in the UK",
+      "image": "->images.bloodstock",
+      "latitude": 52.2421,
+      "longitude": 11.1121,
+      "startDate": "2021-08-16",
+      "endDate": "2021-08-20",
+      "approvalStatus": "pending",
+      "addedBy": "->users.lisa",
+      "attendees": ["->users.lisa","->users.admin"]
+    }
+  },
+  "categories": {
+    "_model": "Category",
+    "death": {
+      "categoryName": "Death metal",
+      "categoryFestivals": ["->festivals.graspop","->festivals.wacken"]
+    },
+    "black": {
+      "categoryName": "Black metal",
+      "categoryFestivals": ["->festivals.graspop","->festivals.tuska"]
+    },
+    "thrash": {
+      "categoryName": "Thrash metal",
+      "categoryFestivals": ["->festivals.graspop","->festivals.metalcamp"]
+    },
+    "speed": {
+      "categoryName": "Speed metal",
+      "categoryFestivals": ["->festivals.graspop","->festivals.bloodstock"]
+    },
+    "rap": {
+      "categoryName": "Rap metal",
+      "categoryFestivals": ["->festivals.graspop","->festivals.tuska"]
+    },
+    "industrial": {
+      "categoryName": "Industrial metal",
+      "categoryFestivals": ["->festivals.metalcamp","->festivals.hellfest"]
+    },
+    "prog": {
+      "categoryName": "Prog rock",
+      "categoryFestivals": ["->festivals.bloodstock","->festivals.hellfest"]
+    },
+    "hard": {
+      "categoryName": "Hard rock",
+      "categoryFestivals": ["->festivals.graspop","->festivals.hellfest","->festivals.tuska"]
+    }
+  }
+}

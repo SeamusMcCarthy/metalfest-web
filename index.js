@@ -19,9 +19,12 @@ const credentials = {
   api_secret: process.env.cloud_secret,
 };
 
+// const server = Hapi.server({
+//   port: 3000,
+//   host: "localhost",
+// });
 const server = Hapi.server({
-  port: 3000,
-  host: "localhost",
+  port: process.env.PORT || 3000,
 });
 
 async function init() {
