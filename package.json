@@ -4,6 +4,7 @@
   "description": "An online resource for metal festivals",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Seamus McCarthy",
@@ -20,6 +21,7 @@
     "dotenv": "^8.2.0",
     "handlebars": "^4.7.7",
     "joi": "^17.4.0",
+    "mais-mongoose-seeder": "^1.0.7",
     "mongoose": "^5.11.17"
   },
   "devDependencies": {

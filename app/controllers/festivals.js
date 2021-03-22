@@ -23,6 +23,9 @@ const Festivals = {
           festivals: festivals,
         });
       } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -52,6 +55,10 @@ const Festivals = {
           festivals: festivals,
         });
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -61,16 +68,27 @@ const Festivals = {
   },
   report: {
     handler: async function (request, h) {
-      const festivals = await Festival.find().lean();
-      const categories = await Category.find()
-        .sort("categoryName")
-        .populate("categoryFestivals")
-        .lean();
-      return h.view("report", {
-        title: "Festivals added to date",
-        festivals: festivals,
-        categories: categories,
-      });
+      try {
+        const festivals = await Festival.find().lean();
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("report", {
+          title: "Festivals added to date",
+          festivals: festivals,
+          categories: categories,
+        });
+      } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
     },
   },
 
@@ -86,6 +104,10 @@ const Festivals = {
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
       },
+      options: {
+        abortEarly: false,
+        allowUnknown: true,
+      },
       failAction: function (request, h, error) {
         return h
           .view("main", {
@@ -98,22 +120,12 @@ const Festivals = {
     },
     handler: async function (request, h) {
       try {
-        const categories = await Category.find()
-          .sort("categoryName")
-          .populate("categoryFestivals")
-          .lean();
-        const file = request.payload.imagefile;
-
-        // if (Object.keys(file).length > 0) {
-        const image = await ImageStore.uploadImage(
-          request.payload.imagefile,
-          request.payload.name
-        );
+        const image = await ImageStore.uploadImage(request.payload.imagefile);
         const newImage = new Image({
           imageURL: image.url,
         });
         await newImage.save();
-        // }
+
         const id = request.auth.credentials.id;
         const user = await User.findById(id);
         const data = request.payload;
@@ -132,7 +144,6 @@ const Festivals = {
           city: data.city,
           country: data.country,
           description: data.description,
-          category: [],
           latitude: data.latitude,
           longitude: data.longitude,
           startDate: data.startDate,
@@ -142,19 +153,25 @@ const Festivals = {
           addedBy: user._id,
           attendees: [],
         });
-        // Add the festival entry to the genre category
         await newFestival.save();
 
-        for (const cat of data.category) {
-          const catID = await Category.findByName(cat);
+        if (typeof data.category == "string") {
+          const catID = await Category.findByName(data.category);
           catID.categoryFestivals.push(newFestival._id);
           await catID.save();
-          newFestival.category.push(catID._id);
+        } else {
+          for (const cat of data.category) {
+            const catID = await Category.findByName(cat);
+            catID.categoryFestivals.push(newFestival._id);
+            await catID.save();
+          }
         }
-        await newFestival.save();
-
         return h.redirect("/report");
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -198,6 +215,10 @@ const Festivals = {
           calendarEDate: calendarEDate[0],
         });
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -217,6 +238,10 @@ const Festivals = {
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
       },
+      options: {
+        abortEarly: false,
+        allowUnknown: true,
+      },
       failAction: function (request, h, error) {
         return h
           .view("main", {
@@ -229,12 +254,7 @@ const Festivals = {
     },
     handler: async function (request, h) {
       try {
-        const categories = await Category.find()
-          .sort("categoryName")
-          .populate("categoryFestivals")
-          .lean();
         const file = request.payload.imagefile;
-        // if (Object.keys(file).length > 0) {
         const image = await ImageStore.uploadImage(
           request.payload.imagefile,
           request.payload.name
@@ -256,7 +276,6 @@ const Festivals = {
         fest.city = festEdit.city;
         fest.country = festEdit.country;
         fest.description = festEdit.description;
-        fest.category = [];
         fest.startDate = festEdit.startDate;
         fest.endDate = festEdit.endDate;
         fest.image = newImage._id;
@@ -264,15 +283,29 @@ const Festivals = {
         fest.longitude = festEdit.longitude;
         await fest.save();
 
-        for (const cat of festEdit.category) {
-          const catID = await Category.findByName(cat);
+        for await (const doc of Category.find()) {
+          doc.categoryFestivals.pull(fest._id);
+          doc.save();
+        }
+
+        if (typeof festEdit.category == "string") {
+          const catID = await Category.findByName(festEdit.category);
           catID.categoryFestivals.push(fest._id);
           await catID.save();
-          fest.category.push(catID._id);
+        } else {
+          for (const cat of festEdit.category) {
+            const catID = await Category.findByName(cat);
+            catID.categoryFestivals.push(fest._id);
+            await catID.save();
+          }
         }
-        await fest.save();
+
         return h.redirect("/select-home");
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -289,10 +322,6 @@ const Festivals = {
   deleteFestival: {
     handler: async function (request, h) {
       try {
-        const categories = await Category.find()
-          .sort("categoryName")
-          .populate("categoryFestivals")
-          .lean();
         const festID = request.params.id;
         for await (const doc of User.find()) {
           doc.attended.pull(festID);
@@ -304,6 +333,10 @@ const Festivals = {
         await Festival.deleteOne({ _id: festID });
         return h.redirect("/home");
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -321,19 +354,15 @@ const Festivals = {
         fest.checkAttendance(id);
         fest.attendees.push(user._id);
         fest.save();
-        user.attended.push(fest._id);
-        user.save();
+        // user.attended.push(fest._id);
+        // user.save();
+
+        return h.redirect("/report");
+      } catch (err) {
         const categories = await Category.find()
           .sort("categoryName")
           .populate("categoryFestivals")
           .lean();
-        const festival = await Festival.findById(festID)
-          .populate("image")
-          .populate("addedBy")
-          .lean();
-
-        return h.redirect("/report");
-      } catch (err) {
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -386,6 +415,10 @@ const Festivals = {
           images: images,
         });
       } catch (err) {
+        const categories = await Category.find()
+          .sort("categoryName")
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
