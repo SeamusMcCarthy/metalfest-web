@@ -21,13 +21,23 @@ const Accounts = {
   showSignup: {
     auth: false,
     handler: async function (request, h) {
-      const categories = await Category.find()
-        .populate("categoryFestivals")
-        .lean();
-      return h.view("signup", {
-        title: "Sign up for Metal Fest!!!",
-        categories: categories,
-      });
+      try {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("signup", {
+          title: "Sign up for Metal Fest!!!",
+          categories: categories,
+        });
+      } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
     },
   },
   signup: {
@@ -68,13 +78,13 @@ const Accounts = {
           password: payload.password,
           userType: "regular",
         });
-        const categories = await Category.find()
-          .populate("categoryFestivals")
-          .lean();
         const user = await newUser.save();
         request.cookieAuth.set({ id: user.id });
         return h.redirect("/home");
       } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -85,31 +95,50 @@ const Accounts = {
   showLogin: {
     auth: false,
     handler: async function (request, h) {
-      const categories = await Category.find()
-        .populate("categoryFestivals")
-        .lean();
-      return h.view("login", {
-        title: "Login to MetalFest!!!",
-        categories: categories,
-      });
+      try {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("login", {
+          title: "Login to MetalFest!!!",
+          categories: categories,
+        });
+      } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
     },
   },
+
   selectHome: {
     handler: async function (request, h) {
-      const id = request.auth.credentials.id;
-      const user = await User.findById(id).lean();
-      if (user.userType == "regular") return h.redirect("/home");
-      else return h.redirect("/admin-home");
+      try {
+        const id = request.auth.credentials.id;
+        const user = await User.findById(id).lean();
+        if (user.userType == "regular") return h.redirect("/home");
+        else return h.redirect("/admin-home");
+      } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
     },
   },
+
   login: {
     auth: false,
     handler: async function (request, h) {
       const { email, password } = request.payload;
       try {
-        const categories = await Category.find()
-          .populate("categoryFestivals")
-          .lean();
         let user = await User.findByEmail(email);
         if (!user) {
           const message = "Email address is not registered";
@@ -123,6 +152,9 @@ const Accounts = {
           return h.redirect("/home");
         }
       } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
         return h.view("login", {
           errors: [{ message: err.message }],
           categories: categories,
@@ -139,19 +171,30 @@ const Accounts = {
   },
   showSettings: {
     handler: async function (request, h) {
-      const categories = await Category.find()
-        .populate("categoryFestivals")
-        .lean();
-      const id = request.auth.credentials.id;
-      const user = await User.findById(id).lean();
+      try {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        const id = request.auth.credentials.id;
+        const user = await User.findById(id).lean();
 
-      return h.view("settings", {
-        title: "User Settings",
-        user: user,
-        categories: categories,
-      });
+        return h.view("settings", {
+          title: "User Settings",
+          user: user,
+          categories: categories,
+        });
+      } catch (err) {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
     },
   },
+
   updateSettings: {
     validate: {
       payload: {
@@ -174,23 +217,31 @@ const Accounts = {
       },
     },
     handler: async function (request, h) {
-      const userEdit = request.payload;
-      const id = request.auth.credentials.id;
-      const user = await User.findById(id);
-      user.firstName = userEdit.firstName;
-      user.lastName = userEdit.lastName;
-      user.email = userEdit.email;
-      user.password = userEdit.password;
-      await user.save();
-      return h.redirect("/settings");
-    },
-  },
-  deleteUser: {
-    handler: async function (request, h) {
       try {
+        const userEdit = request.payload;
+        const id = request.auth.credentials.id;
+        const user = await User.findById(id);
+        user.firstName = userEdit.firstName;
+        user.lastName = userEdit.lastName;
+        user.email = userEdit.email;
+        user.password = userEdit.password;
+        await user.save();
+        return h.redirect("/settings");
+      } catch (err) {
         const categories = await Category.find()
           .populate("categoryFestivals")
           .lean();
+        return h.view("main", {
+          errors: [{ message: err.message }],
+          categories: categories,
+        });
+      }
+    },
+  },
+
+  deleteUser: {
+    handler: async function (request, h) {
+      try {
         const id = request.params.id;
         for await (const doc of Festival.find()) {
           doc.attendees.pull(id);
@@ -199,7 +250,10 @@ const Accounts = {
         await User.deleteOne({ _id: id });
         return h.redirect("/admin-home");
       } catch (err) {
-        return h.view("login", {
+        const categories = await Category.find()
+          .populate("categoryFestivals")
+          .lean();
+        return h.view("main", {
           errors: [{ message: err.message }],
           categories: categories,
         });

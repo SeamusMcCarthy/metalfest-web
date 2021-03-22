@@ -10,12 +10,12 @@ const userSchema = new Schema({
   email: String,
   password: String,
   userType: String,
-  attended: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: "Festival",
-    },
-  ],
+  // attended: [
+  //   {
+  //     type: Schema.Types.ObjectId,
+  //     ref: "Festival",
+  //   },
+  // ],
 });
 
 userSchema.statics.findByEmail = function (email) {
