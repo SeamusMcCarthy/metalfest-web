@@ -255,14 +255,14 @@ const Festivals = {
     handler: async function (request, h) {
       try {
         const file = request.payload.imagefile;
-        const image = await ImageStore.uploadImage(
-          request.payload.imagefile,
-          request.payload.name
-        );
-        const newImage = new Image({
-          imageURL: image.url,
-        });
-        await newImage.save();
+        // const image = await ImageStore.uploadImage(
+        //   request.payload.imagefile,
+        //   request.payload.name
+        // );
+        // const newImage = new Image({
+        //   imageURL: image.url,
+        // });
+        // await newImage.save();
         const festEdit = request.payload;
 
         if (festEdit.endDate < festEdit.startDate) {
@@ -278,7 +278,17 @@ const Festivals = {
         fest.description = festEdit.description;
         fest.startDate = festEdit.startDate;
         fest.endDate = festEdit.endDate;
-        fest.image = newImage._id;
+        if (Object.keys(file).length > 0) {
+          const image = await ImageStore.uploadImage(
+            request.payload.imagefile,
+            request.payload.name
+          );
+          const newImage = new Image({
+            imageURL: image.url,
+          });
+          await newImage.save();
+          fest.image = newImage._id;
+        }
         fest.latitude = festEdit.latitude;
         fest.longitude = festEdit.longitude;
         await fest.save();
