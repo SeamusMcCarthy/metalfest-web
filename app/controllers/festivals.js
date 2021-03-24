@@ -323,10 +323,10 @@ const Festivals = {
     handler: async function (request, h) {
       try {
         const festID = request.params.id;
-        for await (const doc of User.find()) {
-          doc.attended.pull(festID);
-          doc.save();
-        }
+        // for await (const doc of User.find()) {
+        //   doc.attended.pull(festID);
+        //   doc.save();
+        // }
         for await (const doc of Category.find()) {
           doc.categoryFestivals.pull(festID);
         }
