@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("chai").assert;
-const DonationService = require("./metalfest-service");
+const MetalfestService = require("./metalfest-service");
 const fixtures = require("./fixtures.json");
 const utils = require("../app/api/utils.js");
 
@@ -9,7 +9,7 @@ suite("Authentication API tests", function () {
   let users = fixtures.users;
   let newUser = fixtures.newUser;
 
-  const donationService = new DonationService(fixtures.metalfestService);
+  const metalfestService = new MetalfestService(fixtures.metalfestService);
 
   setup(async function () {
     await metalfestService.deleteAllUsers();
@@ -24,8 +24,8 @@ suite("Authentication API tests", function () {
   });
 
   test("verify Token", async function () {
-    const returnedUser = await donationService.createUser(newUser);
-    const response = await donationService.authenticate(newUser);
+    const returnedUser = await metalfestService.createUser(newUser);
+    const response = await metalfestService.authenticate(newUser);
 
     const userInfo = utils.decodeToken(response.token);
     assert.equal(userInfo.email, returnedUser.email);

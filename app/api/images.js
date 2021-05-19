@@ -6,18 +6,14 @@ const ImageStore = require("../utils/image-store");
 
 const Images = {
   find: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const images = await Image.find();
       return images;
     },
   },
   findOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         const image = await Image.findOne({ _id: request.params.id });
@@ -31,9 +27,7 @@ const Images = {
     },
   },
   create: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const newImage = new Image(request.payload);
       const image = await newImage.save();
@@ -45,9 +39,7 @@ const Images = {
   },
 
   deleteAll: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       await Image.remove({});
       return { success: true };
@@ -55,9 +47,7 @@ const Images = {
   },
 
   deleteOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const image = await Image.remove({ _id: request.params.id });
       if (image) {
@@ -68,9 +58,7 @@ const Images = {
   },
 
   deletePublicOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       await ImageStore.deleteImage(request.params.id);
       return { success: true };
@@ -78,9 +66,7 @@ const Images = {
   },
 
   getImagesTag: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         console.log(request.params.name);
@@ -92,6 +78,34 @@ const Images = {
       } catch (err) {
         return Boom.notFound("No image with this id");
       }
+    },
+  },
+
+  uploadAddImage: {
+    auth: false,
+    handler: async function (request, h) {
+      try {
+        const file = request.payload.imagefile;
+        if (Object.keys(file).length > 0) {
+          const image = await ImageStore.uploadImageWithTag(
+            request.payload.imagefile,
+            request.payload.festName
+          );
+          return h.redirect("/fest-dtls/" + request.payload.festID);
+        }
+        return h.view("main", {
+          title: "Image upload",
+          error: "No file selected",
+        });
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    payload: {
+      multipart: true,
+      output: "data",
+      maxBytes: 209715200,
+      parse: true,
     },
   },
 };

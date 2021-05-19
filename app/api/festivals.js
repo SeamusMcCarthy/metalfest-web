@@ -146,7 +146,9 @@ const Festivals = {
     // auth: {
     //   strategy: "jwt",
     // },
-    auth: false,
+    auth: {
+      strategy: "jwt",
+    },
     handler: async function (request, h) {
       let apiKey = "9ee9eafc6a1ccd63e9a1869e1ffcfa0d";
       const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${request.params.location}&appid=${apiKey}`;

@@ -29,6 +29,7 @@ module.exports = [
   { method: "GET", path: "/api/images/{id}", config: Images.findOne },
   { method: "GET", path: "/api/imagename/{name}", config: Images.getImagesTag },
   { method: "POST", path: "/api/images", config: Images.create },
+  { method: "POST", path: "/api/imageadd", config: Images.uploadAddImage },
   {
     method: "DELETE",
     path: "/api/images/{id}",

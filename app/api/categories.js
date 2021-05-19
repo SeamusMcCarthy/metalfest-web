@@ -14,9 +14,7 @@ const Categories = {
     },
   },
   findOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         const category = await Category.findOne({ _id: request.params.id });
@@ -48,9 +46,7 @@ const Categories = {
   // },
 
   create: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const newCategory = new Category(request.payload);
       const category = await newCategory.save();
@@ -62,9 +58,7 @@ const Categories = {
   },
 
   deleteAll: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       await Category.deleteMany({});
       return { success: true };
@@ -72,9 +66,7 @@ const Categories = {
   },
 
   deleteOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const response = await Category.deleteOne({ _id: request.params.id });
       if (response.deletedCount == 1) {

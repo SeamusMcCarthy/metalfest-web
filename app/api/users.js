@@ -6,18 +6,14 @@ const utils = require("./utils.js");
 
 const Users = {
   find: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const users = await User.find();
       return users;
     },
   },
   findOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         const user = await User.findOne({ _id: request.params.id });
@@ -31,9 +27,7 @@ const Users = {
     },
   },
   findEmail: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         const user = await User.findOne({ email: request.params.email });
@@ -59,9 +53,7 @@ const Users = {
   },
 
   deleteAll: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       await User.remove({});
       return { success: true };
@@ -69,9 +61,7 @@ const Users = {
   },
 
   deleteOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const user = await User.remove({ _id: request.params.id });
       if (user) {
@@ -101,9 +91,7 @@ const Users = {
   },
 
   update: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const userEdit = request.payload;
       const user = await User.findById(userEdit._id);
