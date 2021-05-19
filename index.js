@@ -10,6 +10,7 @@ const Handlebars = require("handlebars");
 const Cookie = require("@hapi/cookie");
 const Joi = require("@hapi/joi");
 const env = require("dotenv");
+const utils = require("./app/api/utils.js");
 
 env.config();
 
@@ -24,13 +25,15 @@ const credentials = {
 //   host: "localhost",
 // });
 const server = Hapi.server({
-  port: process.env.PORT || 3000,
+  port: process.env.PORT || 4000,
+  routes: { cors: true },
 });
 
 async function init() {
   await server.register(Inert);
   await server.register(Vision);
   await server.register(Cookie);
+  await server.register(require("hapi-auth-jwt2"));
 
   ImageStore.configure();
 
@@ -60,9 +63,17 @@ async function init() {
     },
     redirectTo: "/",
   });
+
+  server.auth.strategy("jwt", "jwt", {
+    key: "secretpasswordnotrevealedtoanyone",
+    validate: utils.validate,
+    verifyOptions: { algorithms: ["HS256"] },
+  });
+
   server.auth.default("session");
 
   server.route(require("./routes"));
+  server.route(require("./routes-api"));
 
   await server.start();
   console.log(`Server running at: ${server.info.uri}`);

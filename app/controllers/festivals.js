@@ -120,6 +120,7 @@ const Festivals = {
     },
     handler: async function (request, h) {
       try {
+        console.log(request.payload.imagefile);
         const image = await ImageStore.uploadImage(request.payload.imagefile);
         const newImage = new Image({
           imageURL: image.url,

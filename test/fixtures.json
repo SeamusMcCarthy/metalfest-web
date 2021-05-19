@@ -1,0 +1,84 @@
+{
+  "metalfestService": "http://localhost:4000",
+  "categories": [
+    {
+      "categoryName": "Polka",
+      "categoryFestivals" : []
+    },
+    {
+      "categoryName": "Death Metal",
+      "categoryFestivals" : []
+    }
+  ],
+  "festivals": [
+    {
+      "name": "Graspop2",
+      "city": "Dessel2",
+      "country": "Belgium2",
+      "description": "Large fest in Belgium",
+      "latitude": 54.2421,
+      "longitude": 5.1121,
+      "approvalStatus": "pending"
+    },
+    {
+      "name": "Graspop3",
+      "city": "Dessel3",
+      "country": "Belgium3",
+      "description": "Large fest in Belgium",
+      "latitude": 54.2421,
+      "longitude": 5.1121,
+      "approvalStatus": "pending"
+    }
+  ],
+  "images": [
+    {
+      "imageURL": "www.google.com"
+    },
+    {
+      "imageURL": "www.yahoo.com"
+    }
+  ],
+  "users": [
+    {
+      "firstName": "Seamus1",
+      "lastName": "Simpson1",
+      "email": "seamus1@simpson.com",
+      "password": "secret",
+      "userType": "regular"
+    },
+    {
+      "firstName": "Seamus2",
+      "lastName": "Simpson2",
+      "email": "seamus2@simpson.com",
+      "password": "secret",
+      "userType": "regular"
+    }
+  ],
+  "newCategory":
+  {
+    "categoryName": "Rap Metal",
+    "categoryFestivals" : []
+  },
+  "newFestival":
+  {
+    "name": "Graspop4",
+    "city": "Dessel4",
+    "country": "Belgium4",
+    "description": "Large fest in Belgium",
+    "latitude": 54.2421,
+    "longitude": 5.1121,
+    "approvalStatus": "pending"
+  },
+  "newImage":
+  {
+    "imageURL": "www.amazon.com"
+  },
+  "newUser":
+  {
+    "firstName": "Seamus3",
+    "lastName": "Simpson3",
+    "email": "seamus3@simpson.com",
+    "password": "secret",
+    "userType": "regular"
+  }
+}
