@@ -1,7 +1,7 @@
 "use strict";
 
 const axios = require("axios");
-const baseUrl = "http://localhost:4000";
+const baseUrl = "";
 
 class MetalfestService {
   constructor(baseUrl) {
@@ -86,8 +86,12 @@ class MetalfestService {
   }
 
   async createUser(newUser) {
-    const response = await axios.post(this.baseUrl + "/api/users", newUser);
-    return response.data;
+    try {
+      const response = await axios.post(this.baseUrl + "/api/users", newUser);
+      return response.data;
+    } catch (e) {
+      return null;
+    }
   }
 
   async deleteAllCategories() {

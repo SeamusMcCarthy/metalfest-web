@@ -10,18 +10,14 @@ const axios = require("axios");
 
 const Festivals = {
   find: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const festivals = await Festival.find();
       return festivals;
     },
   },
   findOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       try {
         const festival = await Festival.findOne({ _id: request.params.id })
@@ -38,9 +34,7 @@ const Festivals = {
     },
   },
   create: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const newFestival = new Festival(request.payload);
       const festival = await newFestival.save();
@@ -52,9 +46,7 @@ const Festivals = {
   },
 
   create2: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     validate: {
       payload: {
         name: Joi.string().required(),
@@ -85,10 +77,7 @@ const Festivals = {
         });
         await newImage.save();
 
-        // const id = request.auth.credentials.id;
-        // const user = await User.findById(id);
         const data = request.payload;
-
         let festExists = await Festival.findByName(data.name);
         if (festExists.length > 0) {
           const message = "Festival already exists";
@@ -109,7 +98,6 @@ const Festivals = {
           endDate: data.endDate,
           approvalStatus: "pending",
           image: newImage._id,
-          // addedBy: user._id,
           attendees: [],
         });
         await newFestival.save();
@@ -143,12 +131,7 @@ const Festivals = {
   },
 
   getWeather: {
-    // auth: {
-    //   strategy: "jwt",
-    // },
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       let apiKey = "9ee9eafc6a1ccd63e9a1869e1ffcfa0d";
       const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${request.params.location}&appid=${apiKey}`;
@@ -171,9 +154,7 @@ const Festivals = {
   },
 
   deleteAll: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       await Festival.deleteMany({});
       return { success: true };
@@ -181,15 +162,27 @@ const Festivals = {
   },
 
   deleteOne: {
-    auth: {
-      strategy: "jwt",
-    },
+    auth: false,
     handler: async function (request, h) {
       const response = await Festival.deleteOne({ _id: request.params.id });
       if (response.deletedCount == 1) {
         return { success: true };
       }
       return Boom.notFound("id not found");
+    },
+  },
+
+  updateAttendance: {
+    auth: false,
+    handler: async function (request, h) {
+      const festID = request.params.festid;
+      const userID = request.params.userid;
+      const fest = await Festival.findById(festID);
+      fest.attendees.push(userID);
+      fest.save();
+      if (fest) {
+        return { success: true };
+      }
     },
   },
 };

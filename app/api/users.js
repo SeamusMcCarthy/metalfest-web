@@ -43,11 +43,14 @@ const Users = {
   create: {
     auth: false,
     handler: async function (request, h) {
-      const newUser = new User(request.payload);
-      const user = await newUser.save();
-      if (user) {
-        return h.response(user).code(201);
-      }
+      try {
+        const newUser = new User(request.payload);
+        const user = await newUser.save();
+        if (user) {
+          return h.response(user).code(201);
+        }
+        return Boom.badImplementation("error creating user");
+      } catch (err) {}
       return Boom.badImplementation("error creating user");
     },
   },
@@ -82,6 +85,7 @@ const Users = {
           return Boom.unauthorized("Invalid password");
         } else {
           const token = utils.createToken(user);
+          console.log("Token : " + token);
           return h.response({ success: true, token: token }).code(201);
         }
       } catch (err) {

@@ -16,6 +16,11 @@ module.exports = [
 
   { method: "GET", path: "/api/festivals", config: Festivals.find },
   { method: "GET", path: "/api/festivals/{id}", config: Festivals.findOne },
+  {
+    method: "PUT",
+    path: "/api/festivals/{festid}/{userid}",
+    config: Festivals.updateAttendance,
+  },
   { method: "POST", path: "/api/festivals1", config: Festivals.create },
   { method: "POST", path: "/api/festivals", config: Festivals.create2 },
   {

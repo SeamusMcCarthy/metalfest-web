@@ -54,6 +54,14 @@
       "userType": "regular"
     }
   ],
+  "newUser":
+  {
+    "firstName": "Seamus3",
+    "lastName": "Simpson3",
+    "email": "seamus3@simpson.com",
+    "password": "secret",
+    "userType": "regular"
+  },
   "newCategory":
   {
     "categoryName": "Rap Metal",
@@ -72,13 +80,5 @@
   "newImage":
   {
     "imageURL": "www.amazon.com"
-  },
-  "newUser":
-  {
-    "firstName": "Seamus3",
-    "lastName": "Simpson3",
-    "email": "seamus3@simpson.com",
-    "password": "secret",
-    "userType": "regular"
   }
 }
