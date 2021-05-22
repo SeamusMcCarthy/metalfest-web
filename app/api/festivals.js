@@ -7,17 +7,19 @@ const ImageStore = require("../utils/image-store");
 const Image = require("../models/image");
 const Joi = require("@hapi/joi");
 const axios = require("axios");
+const apiKey = process.env.weather_api;
+const sanitize = require("sanitize-html");
 
 const Festivals = {
   find: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       const festivals = await Festival.find();
       return festivals;
     },
   },
   findOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       try {
         const festival = await Festival.findOne({ _id: request.params.id })
@@ -34,9 +36,19 @@ const Festivals = {
     },
   },
   create: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
-      const newFestival = new Festival(request.payload);
+      const data = request.payload;
+      // const newFestival = new Festival(request.payload);
+      const newFestival = new Festival({
+        name: sanitize(data.name),
+        city: sanitize(data.city),
+        country: sanitize(data.country),
+        description: sanitize(data.description),
+        latitude: sanitize(data.latitude),
+        longitude: sanitize(data.longitude),
+        approvalStatus: sanitize(data.approvalStatus),
+      });
       const festival = await newFestival.save();
       if (festival) {
         return h.response(festival).code(201);
@@ -46,7 +58,7 @@ const Festivals = {
   },
 
   create2: {
-    auth: false,
+    auth: { strategy: "jwt" },
     validate: {
       payload: {
         name: Joi.string().required(),
@@ -88,10 +100,10 @@ const Festivals = {
           throw Boom.unauthorized(message);
         }
         const newFestival = new Festival({
-          name: data.name,
-          city: data.city,
-          country: data.country,
-          description: data.description,
+          name: sanitize(data.name),
+          city: sanitize(data.city),
+          country: sanitize(data.country),
+          description: sanitize(data.description),
           latitude: data.latitude,
           longitude: data.longitude,
           startDate: data.startDate,
@@ -108,9 +120,7 @@ const Festivals = {
           await catID.save();
         } else {
           for (const cat of data.categoryList) {
-            console.log("Individual category = " + cat);
             const catID = await Category.findByName(cat);
-            console.log("Category ID : " + catID);
             catID.categoryFestivals.push(newFestival._id);
             await catID.save();
           }
@@ -131,9 +141,9 @@ const Festivals = {
   },
 
   getWeather: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
-      let apiKey = "9ee9eafc6a1ccd63e9a1869e1ffcfa0d";
+      // let apiKey = "9ee9eafc6a1ccd63e9a1869e1ffcfa0d";
       const weatherRequest = `http://api.openweathermap.org/data/2.5/weather?q=${request.params.location}&appid=${apiKey}`;
       let weather = {};
       const response = await axios.get(weatherRequest);
@@ -154,7 +164,7 @@ const Festivals = {
   },
 
   deleteAll: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       await Festival.deleteMany({});
       return { success: true };
@@ -162,7 +172,7 @@ const Festivals = {
   },
 
   deleteOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       const response = await Festival.deleteOne({ _id: request.params.id });
       if (response.deletedCount == 1) {
@@ -173,10 +183,10 @@ const Festivals = {
   },
 
   updateAttendance: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
-      const festID = request.params.festid;
-      const userID = request.params.userid;
+      const festID = sanitize(request.params.festid);
+      const userID = sanitize(request.params.userid);
       const fest = await Festival.findById(festID);
       fest.attendees.push(userID);
       fest.save();

@@ -2,6 +2,7 @@
 
 const Category = require("../models/category");
 const Boom = require("@hapi/boom");
+const sanitize = require("sanitize-html");
 
 const Categories = {
   find: {
@@ -14,7 +15,7 @@ const Categories = {
     },
   },
   findOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       try {
         const category = await Category.findOne({ _id: request.params.id });
@@ -28,27 +29,15 @@ const Categories = {
     },
   },
 
-  // findByName: {
-  //   auth: {
-  //     strategy: "jwt",
-  //   },
-  //   handler: async function (request, h) {
-  //     try {
-  //       const category = await Category.findOne({ categoryName: name });
-  //       if (!category) {
-  //         return Boom.notFound("No category with this name");
-  //       }
-  //       return category;
-  //     } catch (err) {
-  //       return Boom.notFound("No category with this name");
-  //     }
-  //   },
-  // },
-
   create: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
-      const newCategory = new Category(request.payload);
+      let data = request.payload;
+      // const newCategory = new Category(request.payload);
+      const newCategory = new Category({
+        categoryName: sanitize(data.categoryName),
+        categoryFestivals: data.categoryFestivals,
+      });
       const category = await newCategory.save();
       if (category) {
         return h.response(category).code(201);
@@ -58,7 +47,7 @@ const Categories = {
   },
 
   deleteAll: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       await Category.deleteMany({});
       return { success: true };
@@ -66,7 +55,7 @@ const Categories = {
   },
 
   deleteOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       const response = await Category.deleteOne({ _id: request.params.id });
       if (response.deletedCount == 1) {

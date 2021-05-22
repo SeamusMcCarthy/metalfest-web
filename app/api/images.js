@@ -3,17 +3,18 @@
 const Image = require("../models/image");
 const Boom = require("@hapi/boom");
 const ImageStore = require("../utils/image-store");
+const sanitize = require("sanitize-html");
 
 const Images = {
   find: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       const images = await Image.find();
       return images;
     },
   },
   findOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       try {
         const image = await Image.findOne({ _id: request.params.id });
@@ -27,9 +28,12 @@ const Images = {
     },
   },
   create: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
-      const newImage = new Image(request.payload);
+      const data = request.payload;
+      const newImage = new Image({
+        imageURL: sanitize(data.imageURL),
+      });
       const image = await newImage.save();
       if (image) {
         return h.response(image).code(201);
@@ -39,7 +43,7 @@ const Images = {
   },
 
   deleteAll: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       await Image.remove({});
       return { success: true };
@@ -47,7 +51,7 @@ const Images = {
   },
 
   deleteOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       const image = await Image.remove({ _id: request.params.id });
       if (image) {
@@ -58,7 +62,7 @@ const Images = {
   },
 
   deletePublicOne: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       await ImageStore.deleteImage(request.params.id);
       return { success: true };
@@ -66,10 +70,9 @@ const Images = {
   },
 
   getImagesTag: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       try {
-        console.log(request.params.name);
         const images = await ImageStore.getImagesByTag(request.params.name);
         if (!images) {
           return Boom.notFound("No image with this id");
@@ -82,23 +85,19 @@ const Images = {
   },
 
   uploadAddImage: {
-    auth: false,
+    auth: { strategy: "jwt" },
     handler: async function (request, h) {
       try {
-        const file = request.payload.imagefile;
+        const file = sanitize(request.payload.imagefile);
         if (Object.keys(file).length > 0) {
           const image = await ImageStore.uploadImageWithTag(
-            request.payload.imagefile,
-            request.payload.festName
+            sanitize(request.payload.imagefile),
+            sanitize(request.payload.festName)
           );
-          return h.redirect("/fest-dtls/" + request.payload.festID);
+          return image;
         }
-        return h.view("main", {
-          title: "Image upload",
-          error: "No file selected",
-        });
       } catch (err) {
-        console.log(err);
+        return [];
       }
     },
     payload: {

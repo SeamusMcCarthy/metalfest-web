@@ -16,7 +16,6 @@ suite("Authentication API tests", function () {
   });
 
   test("authenticate", async function () {
-    console.log("In Authenticate 2 : " + newUser.email);
     const returnedUser = await metalfestService.createUser(newUser);
     const response = await metalfestService.authenticate(newUser);
 
@@ -29,7 +28,6 @@ suite("Authentication API tests", function () {
     const response = await metalfestService.authenticate(newUser);
 
     const userInfo = utils.decodeToken(response.token);
-    console.log("Emails = " + userInfo.email + " " + returnedUser.email);
     assert.equal(userInfo.email, returnedUser.email);
     assert.equal(userInfo.userId, returnedUser._id);
   });
