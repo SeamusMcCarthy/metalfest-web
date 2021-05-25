@@ -58,6 +58,8 @@ Seamus McCarthy (20091380)
 
 * 1.0
     * Release for Assignment 1 of HDip in Computer Science
+* 1.1
+    * Updated with API endpoints for Assignment 2
 
 ## Acknowledgments
 
